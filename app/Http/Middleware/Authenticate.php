@@ -3,6 +3,8 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
+use Closure;
+use Auth;
 
 class Authenticate extends Middleware
 {
@@ -14,8 +16,17 @@ class Authenticate extends Middleware
      */
     protected function redirectTo($request)
     {
-        if (! $request->expectsJson()) {
-            return route('login');
+        if (!$request->expectsJson()) {
+            return route("login");
         }
+    }
+    public function handle($request, Closure $next, ...$guards)
+    {
+        if ($sanctum = $request->cookie("ymir")) {
+            $request->headers->set("Authorization", "Bearer " . $sanctum);
+        }
+        $this->authenticate($request, $guards);
+
+        return $next($request);
     }
 }

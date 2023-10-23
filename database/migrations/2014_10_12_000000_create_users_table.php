@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -13,15 +12,22 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
-    
+        Schema::create("users", function (Blueprint $table) {
             $table->increments("id");
-            $table->increments("id_prefix");
+            $table->string("id_prefix");
             $table->string("id_no")->unique();
             $table->string("first_name");
-              $table->string("middle_name");
-                $table->string("last_name");
+            $table->string("middle_name");
+            $table->string("last_name");
+            $table->string("suffix")->nullable();
             $table->string("mobile_no")->nullable();
+            $table->string("position");
+
+            $table->unsignedInteger("role_id")->index();
+            $table
+                ->foreign("role_id")
+                ->references("id")
+                ->on("role");
 
             $table->string("username")->unique();
             $table->string("password");
@@ -40,6 +46,7 @@ return new class extends Migration
 
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -50,6 +57,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists("users");
     }
 };
